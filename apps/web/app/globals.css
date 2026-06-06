@@ -1,26 +1,150 @@
-@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #fbf7f1;
+  --surface: #fffdf9;
+  --surface-2: #fbf4ec;
+  --line: #ece1d3;
+  --ink: #2d2923;
+  --muted: #968c7d;
+  --faint: #c2b7a8;
+  --coral: #f18469;
+  --peach: #f7b996;
+  --sky: #a6cff1;
+  --mint: #9bd9bd;
+  --lavender: #c8b7ef;
+  --shadow: 0 14px 35px rgba(73, 56, 39, 0.11), 0 2px 8px rgba(73, 56, 39, 0.06);
+  --serif: "Newsreader", Georgia, serif;
+  --sans: "Plus Jakarta Sans", system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+* { box-sizing: border-box; }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--sans);
+  background:
+    radial-gradient(800px 520px at 95% 4%, rgba(210, 189, 242, .45), transparent 60%),
+    radial-gradient(720px 520px at 98% 100%, rgba(181, 230, 207, .38), transparent 58%),
+    var(--bg);
+}
+button, input, textarea { font: inherit; color: inherit; }
+button { border: 0; background: transparent; cursor: pointer; }
+
+/* 3-COLUMN LAYOUT */
+.appShell { display: flex; height: 100vh; overflow: hidden; }
+.sidebarLeft { width: 260px; flex-shrink: 0; border-right: 1px solid var(--line); padding: 24px 20px; background: rgba(255, 244, 234, .58); overflow-y: auto; display: flex; flex-direction: column; }
+.mainContent { flex: 1; overflow-y: auto; padding: 28px 32px; background: var(--bg); }
+.sidebarRight { width: 280px; flex-shrink: 0; border-left: 1px solid var(--line); padding: 24px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
+
+/* BRAND & NAV */
+.brand { display: flex; align-items: center; gap: 10px; font: 600 18px var(--serif); margin-bottom: 24px; flex-shrink: 0; }
+.brandIcon { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; color: white; background: linear-gradient(135deg, var(--peach), var(--coral)); flex-shrink: 0; }
+.nav { display: grid; gap: 6px; margin-bottom: 28px; }
+.navItem { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border-radius: 12px; font-weight: 700; font-size: 13px; color: var(--muted); transition: all 0.15s; text-decoration: none; }
+.navItem:hover { background: rgba(255,255,255,.5); color: var(--ink); }
+.navItem.active { background: rgba(255,255,255,.72); color: var(--ink); }
+.navItem.active svg, .navItem.active span { color: var(--coral); }
+
+/* DATE CONTEXT BLOCK */
+.dateContext { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.dateBlock { display: grid; gap: 4px; }
+.dateLabel { font-size: 11px; font-weight: 800; color: var(--coral); letter-spacing: .06em; margin: 0; text-transform: uppercase; }
+.dateValue { font: 700 28px var(--serif); margin: 0; color: var(--ink); line-height: 1; }
+.timeValue { font-size: 13px; font-family: monospace; color: var(--muted); margin: 4px 0 0; }
+.greetingValue { font-size: 13px; color: var(--muted); margin: 2px 0 0; }
+
+/* MINI CALENDAR */
+.miniCalendar { display: flex; flex-direction: column; gap: 12px; }
+.miniCalHeader { display: flex; gap: 4px; margin-bottom: 8px; }
+.miniBtn { width: 28px; height: 28px; border-radius: 8px; color: var(--muted); display: grid; place-items: center; font-size: 12px; transition: all 0.15s; }
+.miniBtn:hover { background: var(--surface-2); color: var(--ink); }
+.todayBtn { flex: 1; height: 28px; border-radius: 8px; color: var(--coral); font-size: 11px; font-weight: 800; transition: all 0.15s; }
+.todayBtn:hover { background: var(--surface-2); }
+.miniWeekStrip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.miniDayPill { position: relative; aspect-ratio: 1; border-radius: 10px; display: grid; place-items: center; gap: 2px; color: var(--muted); font-size: 10px; padding: 4px; transition: all 0.15s; }
+.miniDayPill span { font-weight: 700; line-height: 1; }
+.miniDayName { font-size: 9px; }
+.miniDayNum { font-size: 11px; }
+.miniDot { width: 4px; height: 4px; border-radius: 50%; background: var(--coral); position: absolute; bottom: 2px; }
+.miniDayPill.selected { background: var(--coral); color: white; }
+.miniDayPill:hover:not(.selected) { background: var(--surface-2); }
+
+/* TASKS SECTION */
+.tasksSection { display: flex; flex-direction: column; height: 100%; gap: 0; }
+.tasksHeader { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; flex-shrink: 0; }
+.tasksHeader h2 { margin: 0; font: 600 24px var(--serif); color: var(--ink); }
+.tasksDate { margin: 4px 0 0; font-size: 13px; color: var(--muted); font-weight: 500; }
+.tasksStats { font-size: 13px; color: var(--muted); font-weight: 600; }
+.tasksProgress { height: 4px; border-radius: 99px; overflow: hidden; background: var(--surface-2); margin-bottom: 16px; flex-shrink: 0; }
+.tasksProgress span { display: block; height: 100%; background: linear-gradient(90deg, var(--mint), #68bd9a); transition: width 0.3s ease; }
+
+/* CARDS */
+.card { background: rgba(255,255,255,.9); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 20px; }
+.sidebarRight .card { flex-shrink: 0; }
+.journal { min-height: 220px; }
+.journal textarea { width: 100%; min-height: 150px; max-height: 400px; resize: vertical; border: 0; outline: 0; background: transparent; font: 16px/1.6 var(--serif); }
+.journal textarea:focus { outline: 0; }
+.label { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.label span { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: var(--surface-2); flex-shrink: 0; }
+.label span.sky { background: var(--sky); }
+.label span.mint { background: var(--mint); }
+.label b { text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-size: 11px; font-weight: 700; }
+.scale { margin-top: 16px; }
+.scale strong { display: block; color: #6f675c; margin-bottom: 10px; font-size: 13px; font-weight: 600; }
+.scale div { display: flex; gap: 6px; align-items: center; }
+.scale .label { font-size: 11px; color: var(--muted); font-weight: 600; width: 28px; text-align: center; margin: 0; }
+.scale button { width: 22px; height: 22px; border-radius: 50%; background: var(--surface-2); border: 2px solid transparent; transition: all 0.15s; flex-shrink: 0; cursor: pointer; }
+.scale button:hover { border-color: var(--coral); }
+.scale button.filled { background: var(--peach); border-color: var(--coral); transform: scale(1.35); box-shadow: 0 0 0 3px rgba(241, 132, 105, 0.25); }
+
+/* TASKS LIST */
+.tasks { display: flex; flex-direction: column; gap: 6px; flex: 1; overflow-y: auto; }
+.task { display: grid; grid-template-columns: 16px 24px 1fr 28px 24px; gap: 10px; align-items: center; padding: 10px 10px; border-radius: 12px; transition: all 0.15s ease; background: rgba(255,255,255,.5); }
+.task:hover { background: rgba(255,255,255,.8); }
+.task.dragging { opacity: 0.4; background: var(--surface-2); }
+.task.dragOver { border-top: 2px solid var(--coral); }
+.dragHandle { display: flex; align-items: center; justify-content: center; color: var(--faint); cursor: grab; font-size: 12px; opacity: 0; transition: opacity 0.15s; user-select: none; flex-shrink: 0; }
+.task:hover .dragHandle { opacity: 1; }
+.dragHandle:active { cursor: grabbing; }
+.check { width: 22px; height: 22px; border: 2px solid var(--faint); border-radius: 7px; display: grid; place-items: center; flex-shrink: 0; transition: all 0.15s; cursor: pointer; }
+.check:hover { border-color: var(--coral); }
+.check.done { border-color: #76c5a3; background: #76c5a3; color: white; }
+.task input, .task textarea, .addTask input, .addTask textarea { width: 100%; border: 0; outline: 0; background: transparent; font-weight: 600; font-size: 15px; font-family: inherit; }
+.task input { text-decoration-thickness: 2px; word-wrap: break-word; white-space: normal; }
+.task textarea, .addTask textarea { resize: none; overflow: hidden; line-height: 1.5; }
+.task span { word-wrap: break-word; white-space: normal; overflow-wrap: break-word; cursor: pointer; font-size: 15px; }
+.check.done + span { color: var(--faint); text-decoration: line-through; }
+.editTask { color: var(--peach); opacity: 0; transition: opacity 0.15s; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.task:hover .editTask { opacity: 1; }
+.delete { color: var(--faint); font-size: 18px; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; cursor: pointer; }
+.task:hover .delete { opacity: 1; }
+.addTask { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: flex-start; margin-top: 8px; padding: 12px 14px; border: 1.5px dashed var(--line); border-radius: 12px; color: var(--coral); background: transparent; flex-shrink: 0; }
+.addTask:hover { background: rgba(241, 132, 105, 0.05); }
+.addTask input::placeholder, .addTask textarea::placeholder { color: var(--faint); }
+
+/* RESPONSIVE */
+@media (max-width: 1200px) {
+  .sidebarRight { width: 240px; padding: 18px 12px; }
+  .card { padding: 16px; }
+}
+
+@media (max-width: 960px) {
+  .sidebarRight { display: none; }
+  .mainContent { padding: 24px; }
+  .sidebarLeft { width: 220px; padding: 18px 14px; }
+}
+
+@media (max-width: 720px) {
+  .appShell { flex-direction: column; }
+  .sidebarLeft { width: 100%; height: auto; flex-direction: row; align-items: center; justify-content: space-between; padding: 16px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .brand { margin: 0; }
+  .nav { display: none; }
+  .dateContext { display: none; }
+  .miniCalendar { display: none; }
+  .mainContent { flex: 1; padding: 16px; }
+  .tasksHeader { margin-bottom: 12px; }
+  .tasksHeader h2 { font-size: 20px; }
+  .task { grid-template-columns: 20px 24px 1fr 24px; }
+  .dragHandle { display: none; }
 }
